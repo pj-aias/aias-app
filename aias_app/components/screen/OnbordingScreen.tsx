@@ -5,7 +5,7 @@ export class OnbordingScreen extends Component {
   render() {
     return (
         <View>
-            <Text>You have (undefined) friends.</Text>
+            <Text>This is OnbordingScreen</Text>
         </View>
     );
   }

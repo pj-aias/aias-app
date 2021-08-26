@@ -4,6 +4,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { OnbordingScreen } from './components/screen/OnbordingScreen';
 import { SMSInputScreen } from './components/screen/SMSInputScreen';
+import { SMSVarifyScreen } from './components/screen/SMSVarifyScreen';
+import { Router } from './components/screen/util/router';
 
 const Stack = createStackNavigator();
 
@@ -12,15 +14,19 @@ export default class App extends Component {
     return (
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Login/Register"
+          initialRouteName={Router.SMSInputScreen}
         >
           <Stack.Screen
-            name=" "
+            name={Router.OnbordingScreen}
             component={ OnbordingScreen }
           />
           <Stack.Screen
-            name="Login/Register"
+            name={Router.SMSInputScreen}
             component={ SMSInputScreen }
+          />
+          <Stack.Screen
+            name={Router.SMSVarifyScreen}
+            component={ SMSVarifyScreen }
           />
         </Stack.Navigator>
       </NavigationContainer>

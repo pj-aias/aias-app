@@ -1,24 +1,18 @@
 import React, { Component } from 'react';
 import { TextInput, SafeAreaView, StyleSheet, Button, Alert } from 'react-native';
 import { Text, View } from 'react-native';
-import { NavigationParams, NavigationScreenProp } from 'react-navigation';
-import { NavigationState } from '@react-navigation/native';
-import { Router } from './util/router';
-
-interface State {
+interface SMSVarifyScreenState {
   codeText: string;
 }
 
-interface Props {
-  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
-}
+export class SMSVarifyScreen extends Component<{}, SMSVarifyScreenState> {
 
-export class SMSInputScreen extends Component<Props, State> {
-  constructor(props: Props) {
+  constructor(props: {}) {
     super(props);
     this.state = {
-      codeText: "",
+      codeText: ""
     }
+
     this.handleOnChange = this.handleOnChange.bind(this);
   }
 
@@ -27,14 +21,13 @@ export class SMSInputScreen extends Component<Props, State> {
   }
 
   private handleSubmit = () => {
-    //request varify
-    this.props.navigation.navigate(Router.SMSVarifyScreen,{})
+    
   }
 
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <Text>Enter phone number to signin/signup</Text>
+        <Text>varify code</Text>
           <TextInput
             style={styles.textinput}
             value={this.state.codeText} 

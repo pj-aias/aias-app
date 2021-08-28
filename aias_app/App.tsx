@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { OnbordingScreen } from './components/screen/OnbordingScreen';
 import { SMSInputScreen } from './components/screen/SMSInputScreen';
 import { SMSVarifyScreen } from './components/screen/SMSVarifyScreen';
-import { Router } from './components/screen/util/router';
+import { Router } from './util/router';
 
 const Stack = createStackNavigator();
 

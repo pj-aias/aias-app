@@ -5,9 +5,9 @@ import {Opner} from '../../util/types/OpnerType';
 import CheckBox from '@react-native-community/checkbox';
 
 interface Props {
-  isChecked: boolean;
   opner: Opner;
-  toggleCheck: Function;
+  index: number;
+  toggleCheck: (index: number, value: boolean) => void;
 }
 
 export default class OpnerCheckBox extends Component<Props> {
@@ -27,8 +27,10 @@ export default class OpnerCheckBox extends Component<Props> {
         <Text>{this.props.opner.name}</Text>
         <CheckBox
           boxType={'square'}
-          value={this.props.isChecked}
-          onValueChange={newValue => this.props.toggleCheck(newValue)}
+          value={this.props.opner.isSelected}
+          onValueChange={newValue =>
+            this.props.toggleCheck(this.props.index, newValue)
+          }
         />
       </View>
     );
@@ -37,9 +39,11 @@ export default class OpnerCheckBox extends Component<Props> {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 100,
     display: 'flex',
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
   },
   textinput: {
     height: 30,

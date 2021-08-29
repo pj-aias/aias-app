@@ -1,4 +1,5 @@
 export interface Opner {
-    name: string,
-    serverUrl: string
+  name: string;
+  serverUrl: string;
+  isSelected: boolean;
 }

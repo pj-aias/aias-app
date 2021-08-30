@@ -53,7 +53,7 @@ target 'TorExample' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
-  pod 'react-native-tor', :path => '../..'
+  pod 'react-native-tor', :git => 'https://github.com/Sifir-io/react-native-tor.git'
 
   use_native_modules!
   # Enables Flipper.

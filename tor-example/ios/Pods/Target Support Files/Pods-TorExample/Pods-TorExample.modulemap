@@ -1,0 +1,6 @@
+module Pods_TorExample {
+  umbrella header "Pods-TorExample-umbrella.h"
+
+  export *
+  module * { export * }
+}

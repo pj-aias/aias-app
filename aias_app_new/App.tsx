@@ -6,6 +6,7 @@ import {SMSInputScreen} from './components/screen/SMSInputScreen';
 import {SMSVarifyScreen} from './components/screen/SMSVarifyScreen';
 import {Router} from './util/router';
 import {OpnerScreen} from './components/screen/OpnerScreen';
+import {TestTorScreen} from './components/screen/TestTorScreen';
 
 const Stack = createStackNavigator();
 
@@ -13,7 +14,7 @@ export default class App extends Component {
   render() {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={Router.OpnerScreen}>
+        <Stack.Navigator initialRouteName={Router.TestTorScreen}>
           <Stack.Screen
             name={Router.OnbordingScreen}
             component={OnbordingScreen}
@@ -27,6 +28,7 @@ export default class App extends Component {
             component={SMSVarifyScreen}
           />
           <Stack.Screen name={Router.OpnerScreen} component={OpnerScreen} />
+          <Stack.Screen name={Router.TestTorScreen} component={TestTorScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );

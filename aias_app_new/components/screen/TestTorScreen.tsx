@@ -24,12 +24,12 @@ export class TestTorScreen extends Component<Props, State> {
     const tor = Tor();
     await tor.startIfNotStarted();
 
-    // try {
-    //   await tor.get('https://api.ipify.org/?format=json').then(resp => {
-    //     console.log(resp);
-    //     // this.setState({json: JSON.stringify(resp.json)});
-    //   });
-    // } catch (error) {}
+    try {
+      await tor.get('https://api.ipify.org/?format=json').then(resp => {
+        console.log(resp);
+        this.setState({json: JSON.stringify(resp.json)});
+      });
+    } catch (error) {}
   }
 
   render() {

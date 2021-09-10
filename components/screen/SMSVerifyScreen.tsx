@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import {TextInput, SafeAreaView, StyleSheet, Button, Alert} from 'react-native';
-import {Text, View} from 'react-native';
-interface SMSVarifyScreenState {
+import React, { Component } from 'react';
+import { TextInput, SafeAreaView, StyleSheet, Button, Alert } from 'react-native';
+import { Text, View } from 'react-native';
+interface SMSVerifyScreenState {
   codeText: string;
 }
 
-export class SMSVarifyScreen extends Component<{}, SMSVarifyScreenState> {
+export class SMSVerifyScreen extends Component<{}, SMSVerifyScreenState> {
   constructor(props: {}) {
     super(props);
     this.state = {
@@ -16,19 +16,19 @@ export class SMSVarifyScreen extends Component<{}, SMSVarifyScreenState> {
   }
 
   private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({codeText: e.target.value});
+    this.setState({ codeText: e.target.value });
   };
 
-  private handleSubmit = () => {};
+  private handleSubmit = () => { };
 
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <Text>varify code</Text>
+        <Text>verify code</Text>
         <TextInput
           style={styles.textinput}
           value={this.state.codeText}
-          onChangeText={text => this.setState({codeText: text})}
+          onChangeText={text => this.setState({ codeText: text })}
         />
         <Button onPress={this.handleSubmit} title="Send" color="#841584" />
       </SafeAreaView>

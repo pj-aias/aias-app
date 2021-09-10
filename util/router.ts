@@ -1,7 +1,7 @@
 export const Router = {
   OnbordingScreen: 'Onbording',
   SMSInputScreen: 'SignUp/In',
-  SMSVarifyScreen: 'Varify',
+  SMSVerifyScreen: 'Verify',
   OpnerScreen: 'Opner',
   TestTorScreen: 'TestTorScreen',
 } as const;

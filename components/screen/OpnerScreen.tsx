@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   TextInput,
   SafeAreaView,
@@ -7,29 +7,29 @@ import {
   Alert,
   FlatList,
 } from 'react-native';
-import {Text, View} from 'react-native';
-import {Opner} from '../../util/types/OpnerType';
+import { Text, View } from 'react-native';
+import { Opner } from '../../util/types/OpnerType';
 import OpnerCheckBox from '../uiParts/opnerCheckbox';
 
-interface SMSVarifyScreenState {
+interface SMSVerifyScreenState {
   opners: Opner[];
 }
 
-export class OpnerScreen extends Component<{}, SMSVarifyScreenState> {
+export class OpnerScreen extends Component<{}, SMSVerifyScreenState> {
   constructor(props: {}) {
     super(props);
     this.state = {
       opners: [
-        {name: 'test', serverUrl: 'aaa', isSelected: false},
-        {name: 'test', serverUrl: 'aaa', isSelected: false},
-        {name: 'test', serverUrl: 'aaa', isSelected: false},
-        {name: 'test', serverUrl: 'aaa', isSelected: false},
-        {name: 'test', serverUrl: 'aaa', isSelected: false},
-        {name: 'test', serverUrl: 'aaa', isSelected: false},
-        {name: 'test', serverUrl: 'aaa', isSelected: false},
-        {name: 'test', serverUrl: 'aaa', isSelected: false},
-        {name: 'test', serverUrl: 'aaa', isSelected: false},
-        {name: 'test', serverUrl: 'aaa', isSelected: false},
+        { name: 'test', serverUrl: 'aaa', isSelected: false },
+        { name: 'test', serverUrl: 'aaa', isSelected: false },
+        { name: 'test', serverUrl: 'aaa', isSelected: false },
+        { name: 'test', serverUrl: 'aaa', isSelected: false },
+        { name: 'test', serverUrl: 'aaa', isSelected: false },
+        { name: 'test', serverUrl: 'aaa', isSelected: false },
+        { name: 'test', serverUrl: 'aaa', isSelected: false },
+        { name: 'test', serverUrl: 'aaa', isSelected: false },
+        { name: 'test', serverUrl: 'aaa', isSelected: false },
+        { name: 'test', serverUrl: 'aaa', isSelected: false },
       ],
     };
 
@@ -40,19 +40,19 @@ export class OpnerScreen extends Component<{}, SMSVarifyScreenState> {
   private toggleSelect(index: number, value: boolean) {
     let opners = [...this.state.opners];
     opners[index].isSelected = value;
-    this.setState({opners: opners});
+    this.setState({ opners: opners });
   }
 
   private get disableLaunchButton(): boolean {
     return !(this.state.opners.filter(x => x.isSelected).length >= 3);
   }
 
-  private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+  private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => { };
 
-  private handleSubmit = () => {};
+  private handleSubmit = () => { };
 
   render() {
-    const renderItem = ({item, index}: {item: Opner; index: number}) => (
+    const renderItem = ({ item, index }: { item: Opner; index: number }) => (
       <OpnerCheckBox
         opner={item}
         index={index}

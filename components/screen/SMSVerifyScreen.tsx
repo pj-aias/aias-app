@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { TextInput, SafeAreaView, StyleSheet, Button, Alert, NativeSyntheticEvent, TextInputChangeEventData, BackHandler } from 'react-native';
 import { Text, View } from 'react-native';
 import Tor from 'react-native-tor';
+import { RSA, RSAKeychain } from 'react-native-rsa-native';
+import { NavigationStackProp } from 'react-navigation-stack';
 
 const ISSUER_URL = "http://2jz6o2vhsfb55tk2lv73gauoxjmh2uisra65umzkg22yq67mzkvg6ayd.onion/verify_code";
 
@@ -10,9 +12,14 @@ interface SMSVerifyScreenState {
   code: string;
 }
 
-interface SMSVerifyScreenProps {
-  cookie: string;
-}
+type SMSVerifyScreenProps = {
+  route: {
+    params: {
+      cookie: [string]
+    }
+  }
+  // navigation: NavigationStackProp<{ cookie: string }>;
+};
 
 export class SMSVerifyScreen extends Component<SMSVerifyScreenProps, SMSVerifyScreenState> {
   constructor(props: SMSVerifyScreenProps) {
@@ -20,6 +27,9 @@ export class SMSVerifyScreen extends Component<SMSVerifyScreenProps, SMSVerifySc
     this.state = {
       code: '',
     };
+
+    // const data = this.props.navigation.getParam('cookie', 'cookie');
+    console.log(props.route.params.cookie);
 
     this.handleOnChange = this.handleOnChange.bind(this);
   }
@@ -29,15 +39,20 @@ export class SMSVerifyScreen extends Component<SMSVerifyScreenProps, SMSVerifySc
   };
 
   private handleSubmit = async () => {
+    const keys = await RSA.generateKeys(2048)
+
+    const body = JSON.stringify({ code: this.state.code, pubkey: "keys.public" });
+    const headers = { 'Content-Type': 'text/json', "Cookie": this.props.route.params.cookie };
+
+    console.log(body);
+    console.log(headers);
+
     const tor = Tor();
     await tor.startIfNotStarted();
 
-    const body = JSON.stringify({ code: this.state.code, pubkey: "hoge" });
-    const headers = { 'Content-Type': 'text/json', "Cookie": this.props.cookie };
-
     try {
       await tor.post(ISSUER_URL, body, headers).then(resp => {
-        console.log(`code: ${resp.respCode}`);
+        console.log(`body: ${resp.json}`);
 
         tor.stopIfRunning();
         BackHandler.exitApp();

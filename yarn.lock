@@ -5495,6 +5495,11 @@ react-native-gesture-handler@^1.10.3:
     invariant "^2.2.4"
     prop-types "^15.7.2"
 
+react-native-iphone-x-helper@^1.3.0:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.3.1.tgz#20c603e9a0e765fd6f97396638bdeb0e5a60b010"
+  integrity sha512-HOf0jzRnq2/aFUcdCJ9w9JGzN3gdEg0zFE4FyYlp4jtidqU03D5X7ZegGKfT1EWteR0gPBGp9ye5T5FvSWi9Yg==
+
 react-native-reanimated@2.3.0-alpha.3:
   version "2.3.0-alpha.3"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.3.0-alpha.3.tgz#022f5b4eaa847304a155942165a77125c86428bc"
@@ -5506,6 +5511,11 @@ react-native-reanimated@2.3.0-alpha.3:
     mockdate "^3.0.2"
     react-native-screens "^3.4.0"
     string-hash-64 "^1.0.3"
+
+react-native-rsa-native@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-rsa-native/-/react-native-rsa-native-2.0.4.tgz#8001d658f124a50c638a1f41a3abffafc32b008d"
+  integrity sha512-tD40MOLv7JAoHPwC/yYngxGrbiWW3HWT0J4ry4aX7E2I9IcICCoDKvSXaDFwrulHMQbsRphYxrd5uLjfEZkBUQ==
 
 react-native-safe-area-context@^3.3.2:
   version "3.3.2"
@@ -5568,6 +5578,14 @@ react-native@0.65.1:
     use-subscription "^1.0.0"
     whatwg-fetch "^3.0.0"
     ws "^6.1.4"
+
+react-navigation-stack@^2.10.4:
+  version "2.10.4"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.10.4.tgz#377fd6533f8ae0cf5ca5a435a0115851f010306a"
+  integrity sha512-3LE1PFsFV9v4PUlZRATMotqs6H7MOOpIKtjyP+l8D1cyzYmsMQh3EFikeDfzGQUXIvy8VyLAMtcEssicQPYvFA==
+  dependencies:
+    color "^3.1.3"
+    react-native-iphone-x-helper "^1.3.0"
 
 react-navigation@^4.4.4:
   version "4.4.4"

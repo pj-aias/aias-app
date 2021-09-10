@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 import { NavigationParams, NavigationScreenProp } from 'react-navigation';
 import { NavigationState } from '@react-navigation/native';
 import { Router } from '../../util/router';
+
 import Tor from 'react-native-tor';
 
 export type RequestHeaders = { [header: string]: string } | {};
@@ -20,6 +21,7 @@ interface Props {
 
 export class SMSInputScreen extends Component<Props, State> {
   constructor(props: Props) {
+    console.log(props);
     super(props);
     this.state = {
       phoneNumber: '',
@@ -33,26 +35,33 @@ export class SMSInputScreen extends Component<Props, State> {
 
   private handleSubmit = async () => {
     //request verify
+    const body = JSON.stringify({ phone_number: this.state.phoneNumber });
+
+    console.log(body);
+
     const tor = Tor();
     await tor.startIfNotStarted();
 
-    const body = JSON.stringify({ phone_number: this.state.phoneNumber });
 
     try {
       await tor.post(ISSUER_URL, body, { 'Content-Type': 'text/json' }).then(resp => {
-        const setCookie = resp.headers["set-cookie"];
+        const setCookie = resp.headers["set-cookie"][0];
+        const cookie = setCookie.split(";")[0]
         console.log(`result: ${setCookie}`);
+        console.log(`result: ${resp.respCode}`);
 
-        this.props.navigation.navigate(Router.SMSVerifyScreen, { cookie: setCookie });
+        this.props.navigation.navigate(Router.SMSVerifyScreen, { cookie: cookie });
       });
     } catch (error) {
       console.log(error);
     }
 
     tor.stopIfRunning();
+
   };
 
   render() {
+
     return (
       <SafeAreaView style={styles.container}>
         <Text>Enter phone number to signin/signup</Text>

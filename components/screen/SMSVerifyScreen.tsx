@@ -41,7 +41,7 @@ export class SMSVerifyScreen extends Component<SMSVerifyScreenProps, SMSVerifySc
   private handleSubmit = async () => {
     const keys = await RSA.generateKeys(2048)
 
-    const body = JSON.stringify({ code: this.state.code, pubkey: "keys.public" });
+    const body = JSON.stringify({ code: this.state.code, pubkey: keys.public });
     const headers = { 'Content-Type': 'text/json', "Cookie": this.props.route.params.cookie };
 
     console.log(body);

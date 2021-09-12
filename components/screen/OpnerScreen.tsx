@@ -10,19 +10,24 @@ import {
 import { Text, View } from 'react-native';
 import { Opner } from '../../util/types/OpnerType';
 import OpnerCheckBox from '../uiParts/opnerCheckbox';
+import Tor from 'react-native-tor';
+import { Router } from '../../util/router';
+
+import { NavigationParams, NavigationScreenProp } from 'react-navigation';
+import { NavigationState } from '@react-navigation/native';
 
 interface SMSVerifyScreenState {
   opners: Opner[];
 }
 
-
-type OpnerScreenProps = {
+interface OpnerScreenProps {
+  navigation: NavigationScreenProp<NavigationState, NavigationParams>,
   route: {
     params: {
       redirect: [string]
     }
   }
-};
+}
 
 export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenState> {
   constructor(props: OpnerScreenProps) {
@@ -33,16 +38,9 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
 
     this.state = {
       opners: [
-        { name: 'test', serverUrl: 'aaa', isSelected: false },
-        { name: 'test', serverUrl: 'aaa', isSelected: false },
-        { name: 'test', serverUrl: 'aaa', isSelected: false },
-        { name: 'test', serverUrl: 'aaa', isSelected: false },
-        { name: 'test', serverUrl: 'aaa', isSelected: false },
-        { name: 'test', serverUrl: 'aaa', isSelected: false },
-        { name: 'test', serverUrl: 'aaa', isSelected: false },
-        { name: 'test', serverUrl: 'aaa', isSelected: false },
-        { name: 'test', serverUrl: 'aaa', isSelected: false },
-        { name: 'test', serverUrl: 'aaa', isSelected: false },
+        { name: 'Test', serverUrl: 'q5qkbkl7sqy4v2wgttsaq2nkpw7qhrcz6u7lofwesenpmy7qhtu4uuyd.onion', isSelected: true },
+        { name: 'Test', serverUrl: 'q5qkbkl7sqy4v2wgttsaq2nkpw7qhrcz6u7lofwesenpmy7qhtu4uuyd.onion', isSelected: true },
+        { name: 'Test', serverUrl: 'q5qkbkl7sqy4v2wgttsaq2nkpw7qhrcz6u7lofwesenpmy7qhtu4uuyd.onion', isSelected: true },
       ],
     };
 
@@ -62,7 +60,45 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
 
   private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => { };
 
-  private handleSubmit = () => { };
+  private handleSubmit = async () => {
+    const openers = this.state.opners;
+    const url = openers[0].serverUrl;
+
+    const domains = openers.map(data => data.serverUrl)
+    const body = JSON.stringify({ domains: domains });
+
+    const tor = Tor();
+    await tor.startIfNotStarted();
+
+    let cookie = "";
+    let challenge = "";
+
+    try {
+      await tor.get(`http://${domains[0]}/challenge`).then(resp => {
+        challenge = resp.json.nonce;
+        console.log(challenge);
+
+        const setCookie = resp.headers["set-cookie"][0];
+        cookie = setCookie.split(";")[0];
+        console.log(`result: ${setCookie}`);
+        console.log(`result: ${resp.respCode}`);
+      });
+    } catch (error) {
+      console.log(error);
+      tor.stopIfRunning();
+      return;
+    }
+
+    // try {
+    //   await tor.post(url, body, { 'Content-Type': 'text/json', "Cookie": cookie }).then(resp => {
+    //     console.log(`result: ${resp.respCode}`);
+    //   });
+    // } catch (error) {
+    //   console.log(error);
+    // }
+
+    tor.stopIfRunning();
+  }
 
   render() {
     const renderItem = ({ item, index }: { item: Opner; index: number }) => (

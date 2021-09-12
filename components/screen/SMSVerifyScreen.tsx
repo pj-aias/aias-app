@@ -18,7 +18,6 @@ type SMSVerifyScreenProps = {
       cookie: [string]
     }
   }
-  // navigation: NavigationStackProp<{ cookie: string }>;
 };
 
 export class SMSVerifyScreen extends Component<SMSVerifyScreenProps, SMSVerifyScreenState> {

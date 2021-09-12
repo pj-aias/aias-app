@@ -12,7 +12,15 @@ import { Text } from 'react-native';
 const Stack = createStackNavigator();
 const config = {
   screens: {
-    [Router.OpnerScreen]: 'key_gen',
+    [Router.OpnerScreen]: {
+      path: 'key_gen',
+      parse: {
+        id: (url: string) => `?redirect=${url}`,
+      },
+      stringify: {
+        id: (url: string) => url.replace(/^\?redirect=/, ''),
+      },
+    },
   },
 };
 

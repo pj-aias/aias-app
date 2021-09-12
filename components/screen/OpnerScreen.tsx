@@ -15,9 +15,22 @@ interface SMSVerifyScreenState {
   opners: Opner[];
 }
 
-export class OpnerScreen extends Component<{}, SMSVerifyScreenState> {
-  constructor(props: {}) {
+
+type OpnerScreenProps = {
+  route: {
+    params: {
+      redirect: [string]
+    }
+  }
+};
+
+export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenState> {
+  constructor(props: OpnerScreenProps) {
     super(props);
+
+    const redirect = props.route.params.redirect;
+    console.log(`redirect: ${redirect}`);
+
     this.state = {
       opners: [
         { name: 'test', serverUrl: 'aaa', isSelected: false },

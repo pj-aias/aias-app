@@ -139,9 +139,7 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
   private issue = async (tor: any) => {
     const usk = [];
 
-    const openers = this.state.opners;
-    const url = openers[0].serverUrl;
-
+    const openers = this.state.opners.filter(x => x.isSelected)
     const domains = openers.map(data => data.serverUrl)
     let privkey: string | null = "";
     let pubkey: string | null = "";

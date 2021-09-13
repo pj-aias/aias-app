@@ -81,10 +81,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textinput: {
-    height: 30,
+    height: 40,
     width: 200,
     backgroundColor: 'white',
     marginTop: 10,
+    marginBottom: 10
   },
   red: {
     color: 'red',

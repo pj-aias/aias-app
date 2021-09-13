@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import { TextInput, SafeAreaView, StyleSheet, Button, Alert } from 'react-native';
-import { Text, View } from 'react-native';
-import { NavigationParams, NavigationScreenProp } from 'react-navigation';
-import { NavigationState } from '@react-navigation/native';
-import { Router } from '../../util/router';
+import React, {Component} from 'react';
+import {TextInput, SafeAreaView, StyleSheet, Button, Alert} from 'react-native';
+import {Text, View} from 'react-native';
+import {NavigationParams, NavigationScreenProp} from 'react-navigation';
+import {NavigationState} from '@react-navigation/native';
+import {Router} from '../../util/router';
 
 interface State {
   codeText: string;
@@ -23,7 +23,7 @@ export class SMSInputScreen extends Component<Props, State> {
   }
 
   private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ codeText: e.target.value });
+    this.setState({codeText: e.target.value});
   };
 
   private handleSubmit = () => {
@@ -38,7 +38,7 @@ export class SMSInputScreen extends Component<Props, State> {
         <TextInput
           style={styles.textinput}
           value={this.state.codeText}
-          onChangeText={text => this.setState({ codeText: text })}
+          onChangeText={text => this.setState({codeText: text})}
         />
         <Button onPress={this.handleSubmit} title="Send" color="#841584" />
       </SafeAreaView>

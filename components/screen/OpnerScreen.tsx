@@ -7,6 +7,7 @@ import {
   Alert,
   FlatList,
   Linking,
+  Settings,
 } from 'react-native';
 import { Text, View } from 'react-native';
 import { Opner } from '../../util/types/OpnerType';
@@ -23,8 +24,17 @@ import { RSA, RSAKeychain, KeyPair } from 'react-native-rsa-native';
 import RNSecureStorage, { ACCESSIBLE } from 'rn-secure-storage';
 import type { RNSecureStorageStatic } from 'rn-secure-storage';;
 
+import AddOpnerModal from './AddOpnerModal';
+import Modal from 'react-native-modal';
+import AsyncStorage from '@react-native-community/async-storage';
+
 interface SMSVerifyScreenState {
   opners: Opner[];
+  isModalVisible: boolean;
+}
+
+interface Props {
+  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
 }
 
 interface OpnerScreenProps {
@@ -60,17 +70,54 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
         { name: 'Test', serverUrl: 'q5qkbkl7sqy4v2wgttsaq2nkpw7qhrcz6u7lofwesenpmy7qhtu4uuyd.onion', isSelected: true },
         { name: 'Test', serverUrl: 'q5qkbkl7sqy4v2wgttsaq2nkpw7qhrcz6u7lofwesenpmy7qhtu4uuyd.onion', isSelected: true },
       ],
+      isModalVisible: false,
     };
 
+    this.loadItem();
     this.handleOnChange = this.handleOnChange.bind(this);
     this.toggleSelect = this.toggleSelect.bind(this);
   }
+
+  loadItem = async () => {
+    try {
+      const opnerString = await AsyncStorage.getItem('opners');
+      if (opnerString) {
+        const opners = JSON.parse(opnerString) as Opner[];
+        this.setState({ opners: opners });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  saveItem = async () => {
+    try {
+      let _opners = this.state.opners;
+      _opners.forEach(x => (x.isSelected = false));
+      const opnerString = JSON.stringify(_opners);
+      await AsyncStorage.setItem('opners', opnerString).then(_ => {
+        this.setState({ isModalVisible: false });
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  private addNewOpner = async (opner: Opner) => {
+    const opners = this.state.opners.concat([opner]);
+    this.setState({ opners: opners });
+    await this.saveItem();
+  };
 
   private toggleSelect(index: number, value: boolean) {
     let opners = [...this.state.opners];
     opners[index].isSelected = value;
     this.setState({ opners: opners });
   }
+
+  private openModal = () => {
+    this.setState({ isModalVisible: true });
+  };
 
   private get disableLaunchButton(): boolean {
     return !(this.state.opners.filter(x => x.isSelected).length >= 3);
@@ -200,25 +247,43 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
     );
     return (
       <SafeAreaView style={styles.container}>
-        <Text>select opner</Text>
-        <Text>you should select 3 opners or higher</Text>
+        <View style={styles.title}>
+          <Text>select opner</Text>
+          <Text>you should select 3 opners or higher</Text>
+        </View>
         <FlatList
           style={styles.list}
           data={this.state.opners}
           renderItem={renderItem}
         />
-        <Button
-          onPress={this.handleSubmit}
-          title="Launch"
-          disabled={this.disableLaunchButton}
-          color="#841584"
-        />
+        <View style={styles.button}>
+          <Button
+            onPress={this.handleSubmit}
+            title="Launch"
+            disabled={this.disableLaunchButton}
+            color="#841584"
+          />
+        </View>
+        <View style={styles.button}>
+          <Button onPress={this.openModal} title="Add Opner" color="#841584" />
+        </View>
+        <Modal isVisible={this.state.isModalVisible}>
+          <View>
+            <AddOpnerModal
+              addNewOpner={this.addNewOpner}
+              closeModal={this.closeModal}
+            />
+          </View>
+        </Modal>
       </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  title: {
+    marginBottom: 20,
+  },
   container: {
     marginTop: 100,
     display: 'flex',
@@ -231,10 +296,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   list: {
-    height: '80%',
+    height: '60%',
     width: '60%',
   },
   red: {
     color: 'red',
+  },
+  button: {
+    marginTop: 20,
   },
 });

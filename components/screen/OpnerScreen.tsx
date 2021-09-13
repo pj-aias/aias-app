@@ -120,7 +120,7 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
   };
 
   private get disableLaunchButton(): boolean {
-    return !(this.state.opners.filter(x => x.isSelected).length >= 3);
+    return !(this.state.opners.filter(x => x.isSelected).length == 3);
   }
 
   private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => { };

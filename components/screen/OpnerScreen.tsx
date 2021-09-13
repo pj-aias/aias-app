@@ -11,13 +11,14 @@ import { Text, View } from 'react-native';
 import { Opner } from '../../util/types/OpnerType';
 import OpnerCheckBox from '../uiParts/opnerCheckbox';
 import Tor from 'react-native-tor';
+import type TorType from 'react-native-tor';
+import type ProcessedRequestResponse from 'react-native-tor';
+
 import { Router } from '../../util/router';
 
 import { NavigationParams, NavigationScreenProp } from 'react-navigation';
 import { NavigationState } from '@react-navigation/native';
 import { RSA, RSAKeychain, KeyPair } from 'react-native-rsa-native';
-// import type { TypeCrypto } from 'react-native-rsa-native';;
-
 import RNSecureStorage, { ACCESSIBLE } from 'rn-secure-storage';
 import type { RNSecureStorageStatic } from 'rn-secure-storage';;
 
@@ -29,10 +30,16 @@ interface OpnerScreenProps {
   navigation: NavigationScreenProp<NavigationState, NavigationParams>,
   route: {
     params: {
-      redirect: [string]
+      redirect: string[]
     }
   }
 }
+
+type IssueCredential = {
+  cert: string, pubkey: string, privkey: string
+}
+
+type Resp = { json: { nonce: string; }; headers: { [x: string]: any[]; }; respCode: any; };
 
 export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenState> {
   constructor(props: OpnerScreenProps) {
@@ -76,9 +83,6 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
     let pubkey: string | null = "";
     let cert: string | null = ";"
 
-    let cookie = "";
-    let nonce = "";
-
     try {
       privkey = await RNSecureStorage.get('privkey');
       console.log('privkey=' + privkey);
@@ -93,44 +97,49 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
       console.error(e);
     }
 
-    console.log(domains[0]);
+    const cred: IssueCredential = {
+      privkey: (privkey as string),
+      pubkey: (pubkey as string),
+      cert: (cert as string),
+    };
 
     const tor = Tor();
     await tor.startIfNotStarted();
 
-    try {
-      await tor.get(`http://${domains[0]}/challenge`).then(resp => {
-        nonce = resp.json.nonce;
-        console.log(nonce);
+    const usk = [];
 
-        const setCookie = resp.headers["set-cookie"][0];
-        cookie = setCookie.split(";")[0];
-        console.log(`result: ${setCookie}`);
-        console.log(`result: ${resp.respCode}`);
-      });
-    } catch (error) {
-      console.log(error);
-      tor.stopIfRunning();
-      return;
+    for (const domain of domains) {
+      const partial_usk = await this.requestPartialUsk(cred, domains, tor);
+      usk.push(partial_usk);
     }
 
-    const _signature = await RSA.signWithAlgorithm(nonce, (privkey as string), RSA.SHA256withRSA);
-    // const signature = _signature;
-    const signature = _signature.replace(/\n/g, "");
-    console.log("signature:" + signature);
-    console.log("----");
-
-    const body = JSON.stringify({ signature: signature, domains, cert, pubkey });
-
-    try {
-      await tor.post(`http://${domains[0]}/issue`, body, { 'Content-Type': 'text/json', "Cookie": cookie }).then(resp => {
-        console.log(`result: ${JSON.stringify(resp.json)}`);
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    console.log(`usk: ${JSON.stringify(usk)}`);
 
     tor.stopIfRunning();
+  }
+
+  private requestPartialUsk = async (cred: IssueCredential, domains: string[], tor: any) => {
+    let cookie = "";
+    let nonce = "";
+
+    await tor.get(`http://${domain}/challenge`).then((resp: Resp) => {
+      nonce = resp.json.nonce;
+      console.log(nonce);
+
+      const setCookie = resp.headers["set-cookie"][0];
+      cookie = setCookie.split(";")[0];
+      console.log(`result: ${setCookie}`);
+      console.log(`result: ${resp.respCode}`);
+    });
+
+    const _signature = await RSA.signWithAlgorithm(nonce, cred.privkey, RSA.SHA256withRSA as any);
+    const signature = _signature.replace(/\n/g, "");
+
+    const body = JSON.stringify({ signature, domains, cert: cred.cert, pubkey: cred.pubkey });
+
+
+    const resp = await tor.post(`http://${domain}/issue`, body, { 'Content-Type': 'text/json', "Cookie": cookie });
+    return resp.json
   }
 
   render() {

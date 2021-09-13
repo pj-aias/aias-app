@@ -28,6 +28,9 @@ import AddOpnerModal from './AddOpnerModal';
 import Modal from 'react-native-modal';
 import AsyncStorage from '@react-native-community/async-storage';
 
+const keyTag = 'com.aias.issue_key';
+
+
 interface SMSVerifyScreenState {
   opners: Opner[];
   isModalVisible: boolean;
@@ -47,7 +50,7 @@ interface OpnerScreenProps {
 }
 
 type IssueCredential = {
-  cert: string, pubkey: string, privkey: string
+  cert: string, pubkey: string
 }
 
 type AIASCredential = {
@@ -141,14 +144,10 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
 
     const openers = this.state.opners.filter(x => x.isSelected)
     const domains = openers.map(data => data.serverUrl)
-    let privkey: string | null = "";
     let pubkey: string | null = "";
     let cert: string | null = ";"
 
     try {
-      privkey = await RNSecureStorage.get('privkey');
-      console.log('privkey=' + privkey);
-
       pubkey = await RNSecureStorage.get('pubkey');
       console.log('pubkey=' + pubkey);
 
@@ -160,7 +159,6 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
     }
 
     const cred: IssueCredential = {
-      privkey: (privkey as string),
       pubkey: (pubkey as string),
       cert: (cert as string),
     };
@@ -170,16 +168,7 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
 
     for (const domain of domains) {
       const partial_usk = await this.requestPartialUsk(cred, domain, domains, tor);
-      let pubkey;
-
-      try {
-        pubkey = await this.requestPubkey(domains, domain, tor);
-      }
-      catch (e) {
-        console.log('----up')
-        console.log(e);
-        console.log('----')
-      }
+      const pubkey = await this.requestPubkey(domains, domain, tor);
 
       usk.push(partial_usk);
       partialGPK.push(pubkey.partial)
@@ -224,7 +213,7 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
     console.log(`result: ${setCookie}`);
     console.log(`result: ${challenge_resp.respCode}`);
 
-    const _signature = await RSA.signWithAlgorithm(nonce, cred.privkey, RSA.SHA256withRSA as any);
+    const _signature = await RSAKeychain.signWithAlgorithm(nonce, keyTag, RSA.SHA256withRSA as any);
     const signature = _signature.replace(/\n/g, "");
 
     const body = JSON.stringify({ signature, domains, cert: cred.cert, pubkey: cred.pubkey });

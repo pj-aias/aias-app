@@ -6,9 +6,9 @@ import Tor from 'react-native-tor';
 import { RSA, RSAKeychain } from 'react-native-rsa-native';
 import { NavigationStackProp } from 'react-navigation-stack';
 import RNSecureStorage, { ACCESSIBLE } from 'rn-secure-storage';
+import { keyTag } from '../../aias/Core';
+import { verifyCode } from '../../aias/Register';
 
-const ISSUER_URL = "http://2jz6o2vhsfb55tk2lv73gauoxjmh2uisra65umzkg22yq67mzkvg6ayd.onion/verify_code";
-const keyTag = 'com.aias.issue_key';
 
 interface SMSVerifyScreenState {
   code: string;
@@ -17,7 +17,7 @@ interface SMSVerifyScreenState {
 type SMSVerifyScreenProps = {
   route: {
     params: {
-      cookie: [string]
+      cookie: string
     }
   }
 };
@@ -40,43 +40,13 @@ export class SMSVerifyScreen extends Component<SMSVerifyScreenProps, SMSVerifySc
   };
 
   private handleSubmit = async () => {
-    const keys = await RSAKeychain.generateKeys(keyTag, 2048)
+    const cookie = this.props.route.params.cookie;
+    const code = this.state.code;
 
-    const body = JSON.stringify({ code: this.state.code, pubkey: keys.public });
-    const headers = { 'Content-Type': 'text/json', "Cookie": this.props.route.params.cookie };
+    console.log(cookie);
 
-    console.log(body);
-    console.log(headers);
-
-    const tor = Tor();
-    await tor.startIfNotStarted();
-
-    try {
-      await tor.post(ISSUER_URL, body, headers).then(async resp => {
-        await RNSecureStorage.set('pubkey', keys.public, {
-          accessible: ACCESSIBLE.WHEN_UNLOCKED,
-        });
-
-        const _public = await RNSecureStorage.get('public');
-        console.log('public=' + _public);
-
-
-        await RNSecureStorage.set('cert', resp.json.cert, {
-          accessible: ACCESSIBLE.WHEN_UNLOCKED,
-        });
-
-        const _cert = await RNSecureStorage.get('cert');
-        console.log('_cert=' + _cert);
-
-
-        tor.stopIfRunning();
-        BackHandler.exitApp();
-      });
-    } catch (error) {
-      console.log(error);
-    }
-
-    tor.stopIfRunning();
+    await verifyCode(code, cookie);
+    BackHandler.exitApp();
   };
 
   render() {

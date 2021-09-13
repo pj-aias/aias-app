@@ -6,6 +6,7 @@ import {
   Button,
   Alert,
   FlatList,
+  Linking,
 } from 'react-native';
 import { Text, View } from 'react-native';
 import { Opner } from '../../util/types/OpnerType';
@@ -37,6 +38,11 @@ interface OpnerScreenProps {
 
 type IssueCredential = {
   cert: string, pubkey: string, privkey: string
+}
+
+type AIASCredential = {
+  credential: any,
+  pubkey: any,
 }
 
 type Resp = { json: { nonce: string; }; headers: { [x: string]: any[]; }; respCode: any; };
@@ -73,7 +79,18 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
   private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => { };
 
   private handleSubmit = async () => {
-    console.log("submit!");
+    const tor = Tor();
+
+    try {
+      await tor.startIfNotStarted();
+      this.issue(tor)
+    } catch (e) { console.error(e); }
+
+    await tor.stopIfRunning();
+  }
+
+  private issue = async (tor: typeof Tor) => {
+    const usk = [];
 
     const openers = this.state.opners;
     const url = openers[0].serverUrl;
@@ -103,40 +120,71 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
       cert: (cert as string),
     };
 
-    const tor = Tor();
-    await tor.startIfNotStarted();
-
-    const usk = [];
+    const partialGPK = [];
+    const allCombinedGPK = [];
 
     for (const domain of domains) {
-      const partial_usk = await this.requestPartialUsk(cred, domains, tor);
+      const partial_usk = await this.requestPartialUsk(cred, domain, domains, tor);
+      let pubkey;
+
+      try {
+        pubkey = await this.requestPubkey(domains, domain, tor);
+      }
+      catch (e) {
+        console.log('----up')
+        console.log(e);
+        console.log('----')
+      }
+
       usk.push(partial_usk);
+      partialGPK.push(pubkey.partial)
+      allCombinedGPK.push(pubkey.conbined)
+    }
+
+    const combinedGPK = JSON.stringify(allCombinedGPK[0]);
+    const filtered = allCombinedGPK.filter(x => JSON.stringify(x) != combinedGPK);
+
+    if (filtered.length !== 0) {
+      throw Error("pubkey is wrong");
     }
 
     console.log(`usk: ${JSON.stringify(usk)}`);
+    console.log(`pubkeys: ${JSON.stringify(combinedGPK)}`);
 
-    tor.stopIfRunning();
+    const redirect = `${this.props.route.params.redirect}/?credential=${JSON.stringify(usk)}&pubkey=${JSON.stringify(pubkey)}`;
+
+    Linking.openURL(redirect);
+
   }
 
-  private requestPartialUsk = async (cred: IssueCredential, domains: string[], tor: any) => {
+  private requestPubkey = async (domains: string[], domain: String, tor: any) => {
+    console.log(`http://${domain}/pubkey`);
+
+    const resp = await tor.post(`http://${domain}/pubkey`, JSON.stringify({ "domains": domains }), { 'Content-Type': 'text/json' });
+    return resp.json
+  }
+
+  private requestPartialUsk = async (cred: IssueCredential, domain: string, domains: string[], tor: any) => {
     let cookie = "";
     let nonce = "";
 
-    await tor.get(`http://${domain}/challenge`).then((resp: Resp) => {
-      nonce = resp.json.nonce;
-      console.log(nonce);
+    console.log(`http://${domain}/challenge`);
 
-      const setCookie = resp.headers["set-cookie"][0];
-      cookie = setCookie.split(";")[0];
-      console.log(`result: ${setCookie}`);
-      console.log(`result: ${resp.respCode}`);
-    });
+    const challenge_resp = await tor.get(`http://${domain}/challenge`);
+    nonce = challenge_resp.json.nonce;
+    console.log(nonce);
+
+    const setCookie = challenge_resp.headers["set-cookie"][0];
+    cookie = setCookie.split(";")[0];
+    console.log(`result: ${setCookie}`);
+    console.log(`result: ${challenge_resp.respCode}`);
 
     const _signature = await RSA.signWithAlgorithm(nonce, cred.privkey, RSA.SHA256withRSA as any);
     const signature = _signature.replace(/\n/g, "");
 
     const body = JSON.stringify({ signature, domains, cert: cred.cert, pubkey: cred.pubkey });
 
+    console.log(`http://${domain}/issue`);
 
     const resp = await tor.post(`http://${domain}/issue`, body, { 'Content-Type': 'text/json', "Cookie": cookie });
     return resp.json

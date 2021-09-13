@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 import Tor from 'react-native-tor';
 import { RSA, RSAKeychain } from 'react-native-rsa-native';
 import { NavigationStackProp } from 'react-navigation-stack';
+import RNSecureStorage, { ACCESSIBLE } from 'rn-secure-storage';
 
 const ISSUER_URL = "http://2jz6o2vhsfb55tk2lv73gauoxjmh2uisra65umzkg22yq67mzkvg6ayd.onion/verify_code";
 
@@ -50,8 +51,29 @@ export class SMSVerifyScreen extends Component<SMSVerifyScreenProps, SMSVerifySc
     await tor.startIfNotStarted();
 
     try {
-      await tor.post(ISSUER_URL, body, headers).then(resp => {
-        console.log(`body: ${resp.json}`);
+      await tor.post(ISSUER_URL, body, headers).then(async resp => {
+        await RNSecureStorage.set('privkey', keys.private, {
+          accessible: ACCESSIBLE.WHEN_UNLOCKED,
+        });
+
+        const privkey = await RNSecureStorage.get('privkey');
+        console.log('privkey=' + privkey);
+
+        await RNSecureStorage.set('pubkey', keys.public, {
+          accessible: ACCESSIBLE.WHEN_UNLOCKED,
+        });
+
+        const _public = await RNSecureStorage.get('public');
+        console.log('public=' + _public);
+
+
+        await RNSecureStorage.set('cert', resp.json.cert, {
+          accessible: ACCESSIBLE.WHEN_UNLOCKED,
+        });
+
+        const _cert = await RNSecureStorage.get('cert');
+        console.log('_cert=' + _cert);
+
 
         tor.stopIfRunning();
         BackHandler.exitApp();

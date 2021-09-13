@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 import { NavigationParams, NavigationScreenProp } from 'react-navigation';
 import { NavigationState } from '@react-navigation/native';
 import { Router } from '../../util/router';
+import RNSecureStorage, { ACCESSIBLE } from 'rn-secure-storage';
 
 import Tor from 'react-native-tor';
 
@@ -42,7 +43,6 @@ export class SMSInputScreen extends Component<Props, State> {
     const tor = Tor();
     await tor.startIfNotStarted();
 
-
     try {
       await tor.post(ISSUER_URL, body, { 'Content-Type': 'text/json' }).then(resp => {
         const setCookie = resp.headers["set-cookie"][0];
@@ -61,7 +61,6 @@ export class SMSInputScreen extends Component<Props, State> {
   };
 
   render() {
-
     return (
       <SafeAreaView style={styles.container}>
         <Text>Enter phone number to signin/signup</Text>

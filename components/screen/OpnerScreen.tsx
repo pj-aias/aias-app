@@ -15,6 +15,11 @@ import { Router } from '../../util/router';
 
 import { NavigationParams, NavigationScreenProp } from 'react-navigation';
 import { NavigationState } from '@react-navigation/native';
+import { RSA, RSAKeychain, KeyPair } from 'react-native-rsa-native';
+// import type { TypeCrypto } from 'react-native-rsa-native';;
+
+import RNSecureStorage, { ACCESSIBLE } from 'rn-secure-storage';
+import type { RNSecureStorageStatic } from 'rn-secure-storage';;
 
 interface SMSVerifyScreenState {
   opners: Opner[];
@@ -61,22 +66,42 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
   private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => { };
 
   private handleSubmit = async () => {
+    console.log("submit!");
+
     const openers = this.state.opners;
     const url = openers[0].serverUrl;
 
     const domains = openers.map(data => data.serverUrl)
-    const body = JSON.stringify({ domains: domains });
+    let privkey: string | null = "";
+    let pubkey: string | null = "";
+    let cert: string | null = ";"
+
+    let cookie = "";
+    let nonce = "";
+
+    try {
+      privkey = await RNSecureStorage.get('privkey');
+      console.log('privkey=' + privkey);
+
+      pubkey = await RNSecureStorage.get('pubkey');
+      console.log('pubkey=' + pubkey);
+
+      cert = await RNSecureStorage.get('cert');
+      console.log('cert=' + cert);
+    } catch (e) {
+      console.error("errror reading credentials");
+      console.error(e);
+    }
+
+    console.log(domains[0]);
 
     const tor = Tor();
     await tor.startIfNotStarted();
 
-    let cookie = "";
-    let challenge = "";
-
     try {
       await tor.get(`http://${domains[0]}/challenge`).then(resp => {
-        challenge = resp.json.nonce;
-        console.log(challenge);
+        nonce = resp.json.nonce;
+        console.log(nonce);
 
         const setCookie = resp.headers["set-cookie"][0];
         cookie = setCookie.split(";")[0];
@@ -89,13 +114,21 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
       return;
     }
 
-    // try {
-    //   await tor.post(url, body, { 'Content-Type': 'text/json', "Cookie": cookie }).then(resp => {
-    //     console.log(`result: ${resp.respCode}`);
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    const _signature = await RSA.signWithAlgorithm(nonce, (privkey as string), RSA.SHA256withRSA);
+    // const signature = _signature;
+    const signature = _signature.replace(/\n/g, "");
+    console.log("signature:" + signature);
+    console.log("----");
+
+    const body = JSON.stringify({ signature: signature, domains, cert, pubkey });
+
+    try {
+      await tor.post(`http://${domains[0]}/issue`, body, { 'Content-Type': 'text/json', "Cookie": cookie }).then(resp => {
+        console.log(`result: ${JSON.stringify(resp.json)}`);
+      });
+    } catch (error) {
+      console.log(error);
+    }
 
     tor.stopIfRunning();
   }

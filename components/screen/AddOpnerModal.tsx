@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {TextInput, SafeAreaView, StyleSheet, Button, Alert} from 'react-native';
-import {Text, View} from 'react-native';
-import {Opner} from '../../util/types/OpnerType';
+import React, { Component } from 'react';
+import { TextInput, SafeAreaView, StyleSheet, Button, Alert } from 'react-native';
+import { Text, View } from 'react-native';
+import { Opner } from '../../util/types/OpnerType';
 import CheckBox from '@react-native-community/checkbox';
 
 interface Props {
@@ -40,13 +40,13 @@ export default class AddOpnerModal extends Component<Props, State> {
         <TextInput
           style={styles.textinput}
           value={this.state.name}
-          onChangeText={text => this.setState({name: text})}
+          onChangeText={text => this.setState({ name: text })}
         />
         <Text style={styles.margin_20}>Server Url</Text>
         <TextInput
           style={styles.textinput}
           value={this.state.serverUrl}
-          onChangeText={text => this.setState({serverUrl: text})}
+          onChangeText={text => this.setState({ serverUrl: text })}
         />
         <View style={styles.margin_20}>
           <Button

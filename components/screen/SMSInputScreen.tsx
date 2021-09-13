@@ -22,7 +22,6 @@ interface Props {
 
 export class SMSInputScreen extends Component<Props, State> {
   constructor(props: Props) {
-    console.log(props);
     super(props);
     this.state = {
       phoneNumber: '',

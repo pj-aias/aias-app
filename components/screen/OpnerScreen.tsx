@@ -136,7 +136,7 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
     await tor.stopIfRunning();
   }
 
-  private issue = async (tor: typeof Tor) => {
+  private issue = async (tor: any) => {
     const usk = [];
 
     const openers = this.state.opners;
@@ -236,6 +236,10 @@ export class OpnerScreen extends Component<OpnerScreenProps, SMSVerifyScreenStat
     const resp = await tor.post(`http://${domain}/issue`, body, { 'Content-Type': 'text/json', "Cookie": cookie });
     return resp.json
   }
+
+  private closeModal = () => {
+    this.setState({ isModalVisible: false });
+  };
 
   render() {
     const renderItem = ({ item, index }: { item: Opner; index: number }) => (

@@ -2,7 +2,7 @@
 
 AIAS Registration app. 
 
-**Note: This project use orignal anonymous authentication primitives, so do not use on production environment.**
+**Note: This project use orignal anonymous authentication primitives, so do not use on production environment.**  
 **Note: iOS is not supported now, but it will support in near future.**
 
 

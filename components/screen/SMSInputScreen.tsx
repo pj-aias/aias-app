@@ -4,9 +4,8 @@ import { Text, View } from 'react-native';
 import { NavigationParams, NavigationScreenProp } from 'react-navigation';
 import { NavigationState } from '@react-navigation/native';
 import { Router } from '../../util/router';
-import RNSecureStorage, { ACCESSIBLE } from 'rn-secure-storage';
+import { sendPhoneNumber } from '../../aias/Register';
 
-import Tor from 'react-native-tor';
 
 export type RequestHeaders = { [header: string]: string } | {};
 
@@ -35,28 +34,8 @@ export class SMSInputScreen extends Component<Props, State> {
 
   private handleSubmit = async () => {
     //request verify
-    const body = JSON.stringify({ phone_number: this.state.phoneNumber });
-
-    console.log(body);
-
-    const tor = Tor();
-    await tor.startIfNotStarted();
-
-    try {
-      await tor.post(ISSUER_URL, body, { 'Content-Type': 'text/json' }).then(resp => {
-        const setCookie = resp.headers["set-cookie"][0];
-        const cookie = setCookie.split(";")[0]
-        console.log(`result: ${setCookie}`);
-        console.log(`result: ${resp.respCode}`);
-
-        this.props.navigation.navigate(Router.SMSVerifyScreen, { cookie: cookie });
-      });
-    } catch (error) {
-      console.log(error);
-    }
-
-    tor.stopIfRunning();
-
+    const cookie = await sendPhoneNumber(this.state.phoneNumber);
+    this.props.navigation.navigate(Router.SMSVerifyScreen, { cookie: cookie });
   };
 
   render() {

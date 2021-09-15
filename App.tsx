@@ -5,7 +5,7 @@ import { OnbordingScreen } from './components/screen/OnbordingScreen';
 import { SMSInputScreen } from './components/screen/SMSInputScreen';
 import { SMSVerifyScreen } from './components/screen/SMSVerifyScreen';
 import { Router } from './util/router';
-import { OpnerScreen } from './components/screen/OpnerScreen';
+import { openerscreen } from './components/screen/OpnerScreen';
 import { TestTorScreen } from './components/screen/TestTorScreen';
 import { Text } from 'react-native';
 
@@ -46,8 +46,8 @@ export default class App extends Component {
           component={OnbordingScreen}
         />
 
-        <Stack.Screen name={Router.OpnerScreen} component={OpnerScreen} />
-        <Stack.Screen name={Router.TestTorScreen} component={TestTorScreen} />
+        <Stack.Screen name={Router.OpnerScreen} component={openerscreen} />
+      <Stack.Screen name={Router.TestTorScreen} component={TestTorScreen} />
       </Stack.Navigator>
     </NavigationContainer>
     )

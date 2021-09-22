@@ -9,8 +9,6 @@ import { sendPhoneNumber } from '../../aias/Register';
 
 export type RequestHeaders = { [header: string]: string } | {};
 
-const ISSUER_URL = "http://2jz6o2vhsfb55tk2lv73gauoxjmh2uisra65umzkg22yq67mzkvg6ayd.onion/send_code";
-
 interface State {
   phoneNumber: string;
 }
@@ -34,8 +32,13 @@ export class SMSInputScreen extends Component<Props, State> {
 
   private handleSubmit = async () => {
     //request verify
-    const cookie = await sendPhoneNumber(this.state.phoneNumber);
-    this.props.navigation.navigate(Router.SMSVerifyScreen, { cookie: cookie });
+    try {
+      const cookie = await sendPhoneNumber(this.state.phoneNumber);
+      this.props.navigation.navigate(Router.SMSVerifyScreen, { cookie: cookie });
+    } catch (e) {
+      console.error(e);
+      Alert.alert(e.toString());
+    }
   };
 
   render() {

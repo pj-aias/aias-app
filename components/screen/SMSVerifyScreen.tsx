@@ -44,9 +44,15 @@ export class SMSVerifyScreen extends Component<SMSVerifyScreenProps, SMSVerifySc
     const code = this.state.code;
 
     console.log(cookie);
-
-    await verifyCode(code, cookie);
-    BackHandler.exitApp();
+    try {
+      await verifyCode(code, cookie);
+      Alert.alert('Done');
+      setTimeout(() => {
+        BackHandler.exitApp();
+      }, 5000)
+    } catch (e) {
+      Alert.alert(e.toString());
+    }
   };
 
   render() {

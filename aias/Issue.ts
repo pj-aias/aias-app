@@ -13,10 +13,10 @@ type AIASCredential = {
 }
 const issue = async (domains: string[]) => {
     const tor = Tor();
-    try {
-        await tor.startIfNotStarted();
-    }
-    catch (e) { }
+    // try {
+    //     await tor.startIfNotStarted();
+    // }
+    // catch (e) { }
     const usk = [];
 
     let pubkey: string | null = "";
@@ -37,18 +37,27 @@ const issue = async (domains: string[]) => {
     const allCombinedGPK = [];
 
     for (const domain of domains) {
-        const partial_usk = await requestPartialUsk(cred, domain, domains, tor);
-        const pubkey = await requestPubkey(domains, domain, tor);
+        try {
+            const partial_usk = await requestPartialUsk(cred, domain, domains, tor);
+            const pubkey = await requestPubkey(domains, domain, tor);
 
-        usk.push(partial_usk);
-        partialGPK.push(pubkey.partial)
-        allCombinedGPK.push(pubkey.combined)
+            usk.push(partial_usk);
+            partialGPK.push(pubkey.partial)
+            allCombinedGPK.push(pubkey.combined)
+        } catch (e) {
+            console.log(e);
+            await tor.stopIfRunning();
+
+            throw e;
+        }
+
     }
 
     const combinedGPK = JSON.stringify(allCombinedGPK[0]);
     const filtered = allCombinedGPK.filter(x => JSON.stringify(x) != combinedGPK);
 
     if (filtered.length !== 0) {
+        await tor.stopIfRunning();
         throw Error("pubkey is wrong");
     }
 
@@ -57,7 +66,7 @@ const issue = async (domains: string[]) => {
 
     await tor.stopIfRunning();
 
-    return `? credential = ${JSON.stringify(usk)}& pubkey=${combinedGPK} `;
+    return `?credential=${JSON.stringify(usk)}&pubkey=${combinedGPK}`;
 
 }
 

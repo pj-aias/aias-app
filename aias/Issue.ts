@@ -74,7 +74,8 @@ const issue = async (domains: string[]) => {
             v: allCombinedGPK[0].v,
             w: allCombinedGPK[1].u,
             partical_gpks: partialGPK
-        }
+        },
+        domains: domains
     }
 
     console.log(`result: ${JSON.stringify(result)}`);

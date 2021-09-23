@@ -17,7 +17,7 @@ const issue = async (domains: string[]) => {
     //     await tor.startIfNotStarted();
     // }
     // catch (e) { }
-    const usk = [];
+    const partials_usk = [];
 
     let pubkey: string | null = "";
     let cert: string | null = ";"
@@ -36,12 +36,15 @@ const issue = async (domains: string[]) => {
     const partialGPK = [];
     const allCombinedGPK = [];
 
+    // todo: fix
+    domains.sort();
+
     for (const domain of domains) {
         try {
             const partial_usk = await requestPartialUsk(cred, domain, domains, tor);
             const pubkey = await requestPubkey(domains, domain, tor);
 
-            usk.push(partial_usk);
+            partials_usk.push(partial_usk.partial_usk);
             partialGPK.push(pubkey.partial)
             allCombinedGPK.push(pubkey.combined)
         } catch (e) {
@@ -61,12 +64,24 @@ const issue = async (domains: string[]) => {
         throw Error("pubkey is wrong");
     }
 
-    console.log(`usk: ${JSON.stringify(usk)}`);
-    console.log(`pubkeys: ${combinedGPK}`);
+    const result = {
+        usk: {
+            partials: partials_usk,
+        },
+        gpk: {
+            h: allCombinedGPK[0].h,
+            u: allCombinedGPK[0].u,
+            v: allCombinedGPK[0].v,
+            w: allCombinedGPK[1].u,
+            partical_gpks: partialGPK
+        }
+    }
+
+    console.log(`result: ${JSON.stringify(result)}`);
 
     await tor.stopIfRunning();
 
-    return `?credential=${JSON.stringify(usk)}&pubkey=${combinedGPK}`;
+    return `?result=${JSON.stringify(result)}`;
 
 }
 

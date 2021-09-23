@@ -13,11 +13,11 @@ type AIASCredential = {
 }
 const issue = async (domains: string[]) => {
     const tor = Tor();
-    try {
-        await tor.startIfNotStarted();
-    }
-    catch (e) { }
-    const usk = [];
+    // try {
+    //     await tor.startIfNotStarted();
+    // }
+    // catch (e) { }
+    const partials_usk = [];
 
     let pubkey: string | null = "";
     let cert: string | null = ";"
@@ -36,28 +36,53 @@ const issue = async (domains: string[]) => {
     const partialGPK = [];
     const allCombinedGPK = [];
 
-    for (const domain of domains) {
-        const partial_usk = await requestPartialUsk(cred, domain, domains, tor);
-        const pubkey = await requestPubkey(domains, domain, tor);
+    // todo: fix
+    domains.sort();
 
-        usk.push(partial_usk);
-        partialGPK.push(pubkey.partial)
-        allCombinedGPK.push(pubkey.combined)
+    for (const domain of domains) {
+        try {
+            const partial_usk = await requestPartialUsk(cred, domain, domains, tor);
+            const pubkey = await requestPubkey(domains, domain, tor);
+
+            partials_usk.push(partial_usk.partial_usk);
+            partialGPK.push(pubkey.partial)
+            allCombinedGPK.push(pubkey.combined)
+        } catch (e) {
+            console.log(e);
+            await tor.stopIfRunning();
+
+            throw e;
+        }
+
     }
 
     const combinedGPK = JSON.stringify(allCombinedGPK[0]);
     const filtered = allCombinedGPK.filter(x => JSON.stringify(x) != combinedGPK);
 
     if (filtered.length !== 0) {
+        await tor.stopIfRunning();
         throw Error("pubkey is wrong");
     }
 
-    console.log(`usk: ${JSON.stringify(usk)}`);
-    console.log(`pubkeys: ${combinedGPK}`);
+    const result = {
+        usk: {
+            partials: partials_usk,
+        },
+        gpk: {
+            h: allCombinedGPK[0].h,
+            u: allCombinedGPK[0].u,
+            v: allCombinedGPK[0].v,
+            w: allCombinedGPK[1].u,
+            partical_gpks: partialGPK
+        },
+        domains: domains
+    }
+
+    console.log(`result: ${JSON.stringify(result)}`);
 
     await tor.stopIfRunning();
 
-    return `? credential = ${JSON.stringify(usk)}& pubkey=${combinedGPK} `;
+    return `?result=${JSON.stringify(result)}`;
 
 }
 

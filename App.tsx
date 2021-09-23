@@ -47,7 +47,7 @@ export default class App extends Component {
         />
 
         <Stack.Screen name={Router.OpnerScreen} component={openerscreen} />
-      <Stack.Screen name={Router.TestTorScreen} component={TestTorScreen} />
+        <Stack.Screen name={Router.TestTorScreen} component={TestTorScreen} />
       </Stack.Navigator>
     </NavigationContainer>
     )

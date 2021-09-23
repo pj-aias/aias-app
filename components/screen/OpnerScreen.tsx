@@ -77,22 +77,19 @@ export class openerscreen extends Component<openerscreenProps, SMSVerifyScreenSt
   }
 
   loadItem = async () => {
-    try {
-      const openerstring = await AsyncStorage.getItem('openers');
-      if (openerstring) {
-        const openers = JSON.parse(openerstring) as Opener[];
-        this.setState({ openers: openers });
-      }
-    } catch (e) {
-      console.log(e);
+    const openerstring = await AsyncStorage.getItem('openers');
+    if (openerstring) {
+      const openers = JSON.parse(openerstring) as Opener[];
+      this.setState({ openers: openers });
     }
   };
 
   saveItem = async () => {
+    let _openers = this.state.openers;
+    _openers.forEach(x => (x.isSelected = false));
+    const openerstring = JSON.stringify(_openers);
+
     try {
-      let _openers = this.state.openers;
-      _openers.forEach(x => (x.isSelected = false));
-      const openerstring = JSON.stringify(_openers);
       await AsyncStorage.setItem('openers', openerstring).then(_ => {
         this.setState({ isModalVisible: false });
       });
@@ -130,8 +127,10 @@ export class openerscreen extends Component<openerscreenProps, SMSVerifyScreenSt
     try {
       const redirect = `${this.props.route.params.redirect}/${await issue(domains)}`;
       Linking.openURL(redirect);
-    } catch (e) { console.error(e); }
-
+    } catch (e) {
+      console.error(e);
+      Alert.alert(e.toString())
+    }
   }
 
   private closeModal = () => {

@@ -1,6 +1,6 @@
 {
-  "name": "aias_app_new",
-  "displayName": "aias_app_new",
+  "name": "aias_app",
+  "displayName": "aias_app",
   "expo": {
     "scheme": "aias"
   }

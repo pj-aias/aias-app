@@ -1,3 +1,3 @@
-const keyTag = 'com.aias.issue_key';
+const keyTag = 'com.aias.registration_key';
 
 export { keyTag };

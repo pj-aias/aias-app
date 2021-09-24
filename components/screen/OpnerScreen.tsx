@@ -154,6 +154,7 @@ export class openerscreen extends Component<
       Linking.openURL(redirect);
     } catch (e) {
       console.error(e);
+      this.setState({isLoading: false});
       Alert.alert(e.toString());
     }
   };

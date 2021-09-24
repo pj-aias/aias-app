@@ -35,14 +35,14 @@ export default class AddOpnerModal extends Component<Props, State> {
   render() {
     return (
       <View style={styles.container}>
-        <Text>裁判員を追加</Text>
-        <Text style={styles.margin_20}>裁判員 名前</Text>
+        <Text>裁判官を追加</Text>
+        <Text style={styles.margin_20}>裁判官 名前</Text>
         <TextInput
           style={styles.textinput}
           value={this.state.name}
           onChangeText={text => this.setState({name: text})}
         />
-        <Text style={styles.margin_20}>裁判員URL</Text>
+        <Text style={styles.margin_20}>裁判官URL</Text>
         <TextInput
           style={styles.textinput}
           value={this.state.serverUrl}

@@ -174,8 +174,8 @@ export class openerscreen extends Component<
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.title}>
-          <Text>裁判員を選択</Text>
-          <Text>3つ以上の裁判員を選択する必要があります。</Text>
+          <Text>裁判官を選択</Text>
+          <Text>3つ以上の裁判官を選択する必要があります。</Text>
         </View>
         <FlatList
           style={styles.list}
@@ -193,7 +193,7 @@ export class openerscreen extends Component<
         <View style={styles.button}>
           <Button
             onPress={this.openModal}
-            title="裁判員を追加"
+            title="裁判官を追加"
             color="#841584"
           />
         </View>

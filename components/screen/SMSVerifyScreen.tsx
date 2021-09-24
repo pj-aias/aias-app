@@ -76,13 +76,13 @@ export class SMSVerifyScreen extends Component<
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <Text>確認コードを入力</Text>
+        <Text>verify code</Text>
         <TextInput
           style={styles.textinput}
           value={this.state.code}
           onChangeText={text => this.setState({code: text})}
         />
-        <Button onPress={this.handleSubmit} title="送信" color="#841584" />
+        <Button onPress={this.handleSubmit} title="Send" color="#841584" />
         <Spinner visible={this.state.isLoading} />
       </SafeAreaView>
     );

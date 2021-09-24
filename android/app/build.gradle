@@ -213,7 +213,7 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-    implementation files("../../node_modules/react-native-tor/android/libs/sifir_android.aar")
+    implementation files("/home/akakou/Documents/sifir-rs-sdk/sifir-android/outputs/aar/tor-release.aar")
 //    implementation project("../../node_modules/react-native-tor/android")
 }
 

@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {TextInput, SafeAreaView, StyleSheet, Button, Alert} from 'react-native';
-import {Text, View} from 'react-native';
-import {Opner} from '../../util/types/OpnerType';
+import React, { Component } from 'react';
+import { TextInput, SafeAreaView, StyleSheet, Button, Alert } from 'react-native';
+import { Text, View } from 'react-native';
+import { Opner } from '../../util/types/OpnerType';
 import CheckBox from '@react-native-community/checkbox';
 
 interface Props {
@@ -35,28 +35,28 @@ export default class AddOpnerModal extends Component<Props, State> {
   render() {
     return (
       <View style={styles.container}>
-        <Text>裁判員を追加</Text>
-        <Text style={styles.margin_20}>裁判員 名前</Text>
+        <Text>Add Opner</Text>
+        <Text style={styles.margin_20}>Opner Name</Text>
         <TextInput
           style={styles.textinput}
           value={this.state.name}
-          onChangeText={text => this.setState({name: text})}
+          onChangeText={text => this.setState({ name: text })}
         />
-        <Text style={styles.margin_20}>裁判員URL</Text>
+        <Text style={styles.margin_20}>Server Url</Text>
         <TextInput
           style={styles.textinput}
           value={this.state.serverUrl}
-          onChangeText={text => this.setState({serverUrl: text})}
+          onChangeText={text => this.setState({ serverUrl: text })}
         />
         <View style={styles.margin_20}>
           <Button
-            title="追加"
+            title="Add opner"
             onPress={this.addOpner}
             disabled={!(this.state.name !== '' && this.state.serverUrl !== '')}
           />
         </View>
         <View style={styles.margin_20}>
-          <Button title="閉じる" onPress={this.props.closeModal} />
+          <Button title="Close modal" onPress={this.props.closeModal} />
         </View>
       </View>
     );

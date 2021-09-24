@@ -63,9 +63,9 @@ export class openerscreen extends Component<
   constructor(props: openerscreenProps) {
     super(props);
 
-    // const redirect = props.route.params.redirect;
+    const redirect = props.route.params.redirect;
 
-    // console.log(`redirect: ${redirect}`);
+    console.log(`redirect: ${redirect}`);
 
     this.state = {
       openers: [

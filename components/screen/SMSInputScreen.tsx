@@ -1,16 +1,25 @@
-import React, { Component } from 'react';
-import { TextInput, SafeAreaView, StyleSheet, Button, Alert, NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
-import { Text, View } from 'react-native';
-import { NavigationParams, NavigationScreenProp } from 'react-navigation';
-import { NavigationState } from '@react-navigation/native';
-import { Router } from '../../util/router';
-import { sendPhoneNumber } from '../../aias/Register';
+import React, {Component} from 'react';
+import {
+  TextInput,
+  SafeAreaView,
+  StyleSheet,
+  Button,
+  Alert,
+  NativeSyntheticEvent,
+  TextInputChangeEventData,
+} from 'react-native';
+import {Text, View} from 'react-native';
+import {NavigationParams, NavigationScreenProp} from 'react-navigation';
+import {NavigationState} from '@react-navigation/native';
+import {Router} from '../../util/router';
+import {sendPhoneNumber} from '../../aias/Register';
+import Spinner from 'react-native-loading-spinner-overlay';
 
-
-export type RequestHeaders = { [header: string]: string } | {};
+export type RequestHeaders = {[header: string]: string} | {};
 
 interface State {
   phoneNumber: string;
+  isLoading: boolean;
 }
 
 interface Props {
@@ -22,19 +31,24 @@ export class SMSInputScreen extends Component<Props, State> {
     super(props);
     this.state = {
       phoneNumber: '',
+      isLoading: false,
     };
     this.handleOnChange = this.handleOnChange.bind(this);
   }
 
-  private handleOnChange = (e: NativeSyntheticEvent<TextInputChangeEventData>) => {
-    this.setState({ phoneNumber: e.nativeEvent.text });
+  private handleOnChange = (
+    e: NativeSyntheticEvent<TextInputChangeEventData>,
+  ) => {
+    this.setState({phoneNumber: e.nativeEvent.text});
   };
 
   private handleSubmit = async () => {
     //request verify
+    this.setState({isLoading: true});
     try {
       const cookie = await sendPhoneNumber(this.state.phoneNumber);
-      this.props.navigation.navigate(Router.SMSVerifyScreen, { cookie: cookie });
+      this.setState({isLoading: false});
+      this.props.navigation.navigate(Router.SMSVerifyScreen, {cookie: cookie});
     } catch (e) {
       console.error(e);
       Alert.alert(e.toString());
@@ -48,9 +62,10 @@ export class SMSInputScreen extends Component<Props, State> {
         <TextInput
           style={styles.textinput}
           value={this.state.phoneNumber}
-          onChangeText={text => this.setState({ phoneNumber: text })}
+          onChangeText={text => this.setState({phoneNumber: text})}
         />
         <Button onPress={this.handleSubmit} title="Send" color="#841584" />
+        <Spinner visible={this.state.isLoading} />
       </SafeAreaView>
     );
   }
@@ -67,7 +82,7 @@ const styles = StyleSheet.create({
     width: 200,
     backgroundColor: 'white',
     marginTop: 10,
-    marginBottom: 10
+    marginBottom: 10,
   },
   red: {
     color: 'red',

@@ -53,11 +53,10 @@ const issue = async (domains: string[]) => {
 
             throw e;
         }
-
     }
 
-    const combinedGPK = JSON.stringify(allCombinedGPK[0]);
-    const filtered = allCombinedGPK.filter(x => JSON.stringify(x) != combinedGPK);
+    const combinedGPK = JSON.stringify(allCombinedGPK[0].h);
+    const filtered = allCombinedGPK.filter(x => JSON.stringify(x.h) != combinedGPK);
 
     if (filtered.length !== 0) {
         await tor.stopIfRunning();

@@ -13,11 +13,13 @@ import {NavigationParams, NavigationScreenProp} from 'react-navigation';
 import {NavigationState} from '@react-navigation/native';
 import {Router} from '../../util/router';
 import {sendPhoneNumber} from '../../aias/Register';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export type RequestHeaders = {[header: string]: string} | {};
 
 interface State {
   phoneNumber: string;
+  isLoading: boolean;
 }
 
 interface Props {
@@ -29,6 +31,7 @@ export class SMSInputScreen extends Component<Props, State> {
     super(props);
     this.state = {
       phoneNumber: '',
+      isLoading: false,
     };
     this.handleOnChange = this.handleOnChange.bind(this);
   }
@@ -41,11 +44,14 @@ export class SMSInputScreen extends Component<Props, State> {
 
   private handleSubmit = async () => {
     //request verify
+    this.setState({isLoading: true});
     try {
       const cookie = await sendPhoneNumber(this.state.phoneNumber);
+      this.setState({isLoading: false});
       this.props.navigation.navigate(Router.SMSVerifyScreen, {cookie: cookie});
     } catch (e) {
       console.error(e);
+      this.setState({isLoading: false});
       Alert.alert(e.toString());
     }
   };
@@ -60,6 +66,7 @@ export class SMSInputScreen extends Component<Props, State> {
           onChangeText={text => this.setState({phoneNumber: text})}
         />
         <Button onPress={this.handleSubmit} title="送信" color="#841584" />
+        <Spinner visible={this.state.isLoading} />
       </SafeAreaView>
     );
   }

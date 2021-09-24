@@ -29,10 +29,12 @@ import type {RNSecureStorageStatic} from 'rn-secure-storage';
 import AddOpenerModal from './AddOpnerModal';
 import Modal from 'react-native-modal';
 import AsyncStorage from '@react-native-community/async-storage';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 interface SMSVerifyScreenState {
   openers: Opener[];
   isModalVisible: boolean;
+  isLoading: boolean;
 }
 
 interface Props {
@@ -87,6 +89,7 @@ export class openerscreen extends Component<
         },
       ],
       isModalVisible: false,
+      isLoading: false,
     };
 
     this.loadItem();
@@ -139,6 +142,7 @@ export class openerscreen extends Component<
   private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
 
   private handleSubmit = async () => {
+    this.setState({isLoading: true});
     const openers = this.state.openers.filter(x => x.isSelected);
     const domains = openers.map(data => data.serverUrl);
 
@@ -146,9 +150,11 @@ export class openerscreen extends Component<
       const redirect = `${this.props.route.params.redirect}/${await issue(
         domains,
       )}`;
+      this.setState({isLoading: false});
       Linking.openURL(redirect);
     } catch (e) {
       console.error(e);
+      this.setState({isLoading: false});
       Alert.alert(e.toString());
     }
   };
@@ -199,6 +205,7 @@ export class openerscreen extends Component<
             />
           </View>
         </Modal>
+        <Spinner visible={this.state.isLoading} />
       </SafeAreaView>
     );
   }

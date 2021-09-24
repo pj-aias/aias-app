@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   TextInput,
   SafeAreaView,
@@ -9,29 +9,27 @@ import {
   Linking,
   Settings,
 } from 'react-native';
-import { Text, View } from 'react-native';
-import { Opner as Opener } from '../../util/types/OpnerType';
+import {Text, View} from 'react-native';
+import {Opner as Opener} from '../../util/types/OpnerType';
 import Tor from 'react-native-tor';
 import type TorType from 'react-native-tor';
 import type ProcessedRequestResponse from 'react-native-tor';
 
 import OpenerCheckBox from '../uiParts/opnerCheckbox';
-import { issue } from '../../aias/Issue'
+import {issue} from '../../aias/Issue';
 
-import { Router } from '../../util/router';
+import {Router} from '../../util/router';
 
-import { NavigationParams, NavigationScreenProp } from 'react-navigation';
-import { NavigationState } from '@react-navigation/native';
-import { RSA, RSAKeychain, KeyPair } from 'react-native-rsa-native';
-import RNSecureStorage, { ACCESSIBLE } from 'rn-secure-storage';
-import type { RNSecureStorageStatic } from 'rn-secure-storage';;
+import {NavigationParams, NavigationScreenProp} from 'react-navigation';
+import {NavigationState} from '@react-navigation/native';
+import {RSA, RSAKeychain, KeyPair} from 'react-native-rsa-native';
+import RNSecureStorage, {ACCESSIBLE} from 'rn-secure-storage';
+import type {RNSecureStorageStatic} from 'rn-secure-storage';
 
 import AddOpenerModal from './AddOpnerModal';
 import Modal from 'react-native-modal';
 import AsyncStorage from '@react-native-community/async-storage';
 import Spinner from 'react-native-loading-spinner-overlay';
-
-
 
 interface SMSVerifyScreenState {
   openers: Opener[];
@@ -44,19 +42,24 @@ interface Props {
 }
 
 interface openerscreenProps {
-  navigation: NavigationScreenProp<NavigationState, NavigationParams>,
+  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
   route: {
     params: {
-      redirect: string[]
-    }
-  }
+      redirect: string[];
+    };
+  };
 }
 
+type Resp = {
+  json: {nonce: string};
+  headers: {[x: string]: any[]};
+  respCode: any;
+};
 
-
-type Resp = { json: { nonce: string; }; headers: { [x: string]: any[]; }; respCode: any; };
-
-export class openerscreen extends Component<openerscreenProps, SMSVerifyScreenState> {
+export class openerscreen extends Component<
+  openerscreenProps,
+  SMSVerifyScreenState
+> {
   constructor(props: openerscreenProps) {
     super(props);
 
@@ -66,9 +69,24 @@ export class openerscreen extends Component<openerscreenProps, SMSVerifyScreenSt
 
     this.state = {
       openers: [
-        { name: 'Test', serverUrl: 'q5qkbkl7sqy4v2wgttsaq2nkpw7qhrcz6u7lofwesenpmy7qhtu4uuyd.onion', isSelected: true },
-        { name: 'Test', serverUrl: 'q5qkbkl7sqy4v2wgttsaq2nkpw7qhrcz6u7lofwesenpmy7qhtu4uuyd.onion', isSelected: true },
-        { name: 'Test', serverUrl: 'q5qkbkl7sqy4v2wgttsaq2nkpw7qhrcz6u7lofwesenpmy7qhtu4uuyd.onion', isSelected: true },
+        {
+          name: 'Test',
+          serverUrl:
+            'q5qkbkl7sqy4v2wgttsaq2nkpw7qhrcz6u7lofwesenpmy7qhtu4uuyd.onion',
+          isSelected: true,
+        },
+        {
+          name: 'Test',
+          serverUrl:
+            'q5qkbkl7sqy4v2wgttsaq2nkpw7qhrcz6u7lofwesenpmy7qhtu4uuyd.onion',
+          isSelected: true,
+        },
+        {
+          name: 'Test',
+          serverUrl:
+            'q5qkbkl7sqy4v2wgttsaq2nkpw7qhrcz6u7lofwesenpmy7qhtu4uuyd.onion',
+          isSelected: true,
+        },
       ],
       isModalVisible: false,
       isLoading: false,
@@ -83,7 +101,7 @@ export class openerscreen extends Component<openerscreenProps, SMSVerifyScreenSt
     const openerstring = await AsyncStorage.getItem('openers');
     if (openerstring) {
       const openers = JSON.parse(openerstring) as Opener[];
-      this.setState({ openers: openers });
+      this.setState({openers: openers});
     }
   };
 
@@ -94,7 +112,7 @@ export class openerscreen extends Component<openerscreenProps, SMSVerifyScreenSt
 
     try {
       await AsyncStorage.setItem('openers', openerstring).then(_ => {
-        this.setState({ isModalVisible: false });
+        this.setState({isModalVisible: false});
       });
     } catch (e) {
       console.log(e);
@@ -103,25 +121,25 @@ export class openerscreen extends Component<openerscreenProps, SMSVerifyScreenSt
 
   private addNewOpener = async (Opener: Opener) => {
     const openers = this.state.openers.concat([Opener]);
-    this.setState({ openers: openers });
+    this.setState({openers: openers});
     await this.saveItem();
   };
 
   private toggleSelect(index: number, value: boolean) {
     let openers = [...this.state.openers];
     openers[index].isSelected = value;
-    this.setState({ openers: openers });
+    this.setState({openers: openers});
   }
 
   private openModal = () => {
-    this.setState({ isModalVisible: true });
+    this.setState({isModalVisible: true});
   };
 
   private get disableLaunchButton(): boolean {
     return !(this.state.openers.filter(x => x.isSelected).length == 3);
   }
 
-  private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => { };
+  private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
 
   private handleSubmit = async () => {
     this.setState({isLoading: true});
@@ -139,14 +157,14 @@ export class openerscreen extends Component<openerscreenProps, SMSVerifyScreenSt
       this.setState({isLoading: false});
       Alert.alert(e.toString());
     }
-  }
+  };
 
   private closeModal = () => {
-    this.setState({ isModalVisible: false });
+    this.setState({isModalVisible: false});
   };
 
   render() {
-    const renderItem = ({ item, index }: { item: Opener; index: number }) => (
+    const renderItem = ({item, index}: {item: Opener; index: number}) => (
       <OpenerCheckBox
         opner={item}
         index={index}
@@ -156,8 +174,8 @@ export class openerscreen extends Component<openerscreenProps, SMSVerifyScreenSt
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.title}>
-          <Text>select Opener</Text>
-          <Text>you should select 3 openers or higher</Text>
+          <Text>裁判員を選択</Text>
+          <Text>3つ以上の裁判員を選択する必要があります。</Text>
         </View>
         <FlatList
           style={styles.list}
@@ -167,13 +185,17 @@ export class openerscreen extends Component<openerscreenProps, SMSVerifyScreenSt
         <View style={styles.button}>
           <Button
             onPress={this.handleSubmit}
-            title="Launch"
+            title="アプリを起動"
             disabled={this.disableLaunchButton}
             color="#841584"
           />
         </View>
         <View style={styles.button}>
-          <Button onPress={this.openModal} title="Add Opener" color="#841584" />
+          <Button
+            onPress={this.openModal}
+            title="裁判員を追加"
+            color="#841584"
+          />
         </View>
         <Modal isVisible={this.state.isModalVisible}>
           <View>

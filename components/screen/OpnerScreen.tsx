@@ -63,9 +63,9 @@ export class openerscreen extends Component<
   constructor(props: openerscreenProps) {
     super(props);
 
-    const redirect = props.route.params.redirect;
+    // const redirect = props.route.params.redirect;
 
-    console.log(`redirect: ${redirect}`);
+    // console.log(`redirect: ${redirect}`);
 
     this.state = {
       openers: [
@@ -139,6 +139,24 @@ export class openerscreen extends Component<
     return !(this.state.openers.filter(x => x.isSelected).length == 3);
   }
 
+  private get disableRemoveOpenerButton(): boolean {
+    return this.state.openers.filter(x => x.isSelected).length == 0;
+  }
+
+  private removeOpener = async () => {
+    let openers = this.state.openers;
+    openers.forEach((opener, index) => {
+      if (opener.isSelected) {
+        openers.splice(index, 1);
+      }
+    });
+    openers.forEach((_, index) => {
+      openers[index].isSelected = false;
+    });
+    this.setState({openers: openers});
+    await this.saveItem();
+  };
+
   private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
 
   private handleSubmit = async () => {
@@ -192,6 +210,14 @@ export class openerscreen extends Component<
         </View>
         <View style={styles.button}>
           <Button onPress={this.openModal} title="Add Opener" color="#841584" />
+        </View>
+        <View style={styles.button}>
+          <Button
+            onPress={this.removeOpener}
+            title="Remove Selected Opener"
+            disabled={this.disableRemoveOpenerButton}
+            color="red"
+          />
         </View>
         <Modal isVisible={this.state.isModalVisible}>
           <View>

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   TextInput,
   SafeAreaView,
@@ -9,22 +9,22 @@ import {
   Linking,
   Settings,
 } from 'react-native';
-import {Text, View} from 'react-native';
-import {Opner as Opener} from '../../util/types/OpnerType';
+import { Text, View } from 'react-native';
+import { Opner as Opener } from '../../util/types/OpnerType';
 import Tor from 'react-native-tor';
 import type TorType from 'react-native-tor';
 import type ProcessedRequestResponse from 'react-native-tor';
 
 import OpenerCheckBox from '../uiParts/opnerCheckbox';
-import {issue} from '../../aias/Issue';
+import { issue } from '../../aias/Issue';
 
-import {Router} from '../../util/router';
+import { Router } from '../../util/router';
 
-import {NavigationParams, NavigationScreenProp} from 'react-navigation';
-import {NavigationState} from '@react-navigation/native';
-import {RSA, RSAKeychain, KeyPair} from 'react-native-rsa-native';
-import RNSecureStorage, {ACCESSIBLE} from 'rn-secure-storage';
-import type {RNSecureStorageStatic} from 'rn-secure-storage';
+import { NavigationParams, NavigationScreenProp } from 'react-navigation';
+import { NavigationState } from '@react-navigation/native';
+import { RSA, RSAKeychain, KeyPair } from 'react-native-rsa-native';
+import RNSecureStorage, { ACCESSIBLE } from 'rn-secure-storage';
+import type { RNSecureStorageStatic } from 'rn-secure-storage';
 
 import AddOpenerModal from './AddOpnerModal';
 import Modal from 'react-native-modal';
@@ -51,8 +51,8 @@ interface openerscreenProps {
 }
 
 type Resp = {
-  json: {nonce: string};
-  headers: {[x: string]: any[]};
+  json: { nonce: string };
+  headers: { [x: string]: any[] };
   respCode: any;
 };
 
@@ -101,7 +101,7 @@ export class openerscreen extends Component<
     const openerstring = await AsyncStorage.getItem('openers');
     if (openerstring) {
       const openers = JSON.parse(openerstring) as Opener[];
-      this.setState({openers: openers});
+      this.setState({ openers: openers });
     }
   };
 
@@ -112,7 +112,7 @@ export class openerscreen extends Component<
 
     try {
       await AsyncStorage.setItem('openers', openerstring).then(_ => {
-        this.setState({isModalVisible: false});
+        this.setState({ isModalVisible: false });
       });
     } catch (e) {
       console.log(e);
@@ -121,28 +121,28 @@ export class openerscreen extends Component<
 
   private addNewOpener = async (Opener: Opener) => {
     const openers = this.state.openers.concat([Opener]);
-    this.setState({openers: openers});
+    this.setState({ openers: openers });
     await this.saveItem();
   };
 
   private toggleSelect(index: number, value: boolean) {
     let openers = [...this.state.openers];
     openers[index].isSelected = value;
-    this.setState({openers: openers});
+    this.setState({ openers: openers });
   }
 
   private openModal = () => {
-    this.setState({isModalVisible: true});
+    this.setState({ isModalVisible: true });
   };
 
   private get disableLaunchButton(): boolean {
     return !(this.state.openers.filter(x => x.isSelected).length == 3);
   }
 
-  private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+  private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => { };
 
   private handleSubmit = async () => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     const openers = this.state.openers.filter(x => x.isSelected);
     const domains = openers.map(data => data.serverUrl);
 
@@ -150,21 +150,21 @@ export class openerscreen extends Component<
       const redirect = `${this.props.route.params.redirect}/${await issue(
         domains,
       )}`;
-      this.setState({isLoading: false});
+      this.setState({ isLoading: false });
       Linking.openURL(redirect);
     } catch (e) {
       console.error(e);
-      this.setState({isLoading: false});
+      this.setState({ isLoading: false });
       Alert.alert(e.toString());
     }
   };
 
   private closeModal = () => {
-    this.setState({isModalVisible: false});
+    this.setState({ isModalVisible: false });
   };
 
   render() {
-    const renderItem = ({item, index}: {item: Opener; index: number}) => (
+    const renderItem = ({ item, index }: { item: Opener; index: number }) => (
       <OpenerCheckBox
         opner={item}
         index={index}
@@ -176,6 +176,7 @@ export class openerscreen extends Component<
         <View style={styles.title}>
           <Text>裁判官を選択</Text>
           <Text>3つ以上の裁判官を選択する必要があります。</Text>
+          <Text>※処理には3分ほど時間がかかります</Text>
         </View>
         <FlatList
           style={styles.list}
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   container: {
-    marginTop: 100,
+    marginTop: 60,
     display: 'flex',
     alignItems: 'center',
   },

@@ -77,6 +77,7 @@ export class SMSVerifyScreen extends Component<
     return (
       <SafeAreaView style={styles.container}>
         <Text>確認コードを入力</Text>
+        <Text>※確認には1分ほど時間がかかります</Text>
         <TextInput
           style={styles.textinput}
           value={this.state.code}

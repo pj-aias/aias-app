@@ -59,7 +59,8 @@ export class SMSInputScreen extends Component<Props, State> {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <Text>電話番号を入力して登録/ログイン</Text>
+        <Text>電話番号（070）を入力して登録</Text>
+        <Text>※登録には1分ほど時間がかかります</Text>
         <TextInput
           style={styles.textinput}
           value={this.state.phoneNumber}

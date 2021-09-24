@@ -68,6 +68,7 @@ export class SMSVerifyScreen extends Component<
         this.setState({isLoading: false});
       }, 5000);
     } catch (e) {
+      this.setState({isLoading: false});
       Alert.alert(e.toString());
     }
   };

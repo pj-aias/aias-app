@@ -174,8 +174,8 @@ export class openerscreen extends Component<
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.title}>
-          <Text>select Opener</Text>
-          <Text>you should select 3 openers or higher</Text>
+          <Text>裁判員を選択</Text>
+          <Text>3つ以上の裁判員を選択する必要があります。</Text>
         </View>
         <FlatList
           style={styles.list}
@@ -185,13 +185,17 @@ export class openerscreen extends Component<
         <View style={styles.button}>
           <Button
             onPress={this.handleSubmit}
-            title="Launch"
+            title="アプリを起動"
             disabled={this.disableLaunchButton}
             color="#841584"
           />
         </View>
         <View style={styles.button}>
-          <Button onPress={this.openModal} title="Add Opener" color="#841584" />
+          <Button
+            onPress={this.openModal}
+            title="裁判員を追加"
+            color="#841584"
+          />
         </View>
         <Modal isVisible={this.state.isModalVisible}>
           <View>

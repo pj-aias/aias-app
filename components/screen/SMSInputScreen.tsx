@@ -51,6 +51,7 @@ export class SMSInputScreen extends Component<Props, State> {
       this.props.navigation.navigate(Router.SMSVerifyScreen, {cookie: cookie});
     } catch (e) {
       console.error(e);
+      this.setState({isLoading: false});
       Alert.alert(e.toString());
     }
   };
@@ -58,13 +59,13 @@ export class SMSInputScreen extends Component<Props, State> {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <Text>Enter phone number to signin/signup</Text>
+        <Text>電話番号を入力して登録/ログイン</Text>
         <TextInput
           style={styles.textinput}
           value={this.state.phoneNumber}
           onChangeText={text => this.setState({phoneNumber: text})}
         />
-        <Button onPress={this.handleSubmit} title="Send" color="#841584" />
+        <Button onPress={this.handleSubmit} title="送信" color="#841584" />
         <Spinner visible={this.state.isLoading} />
       </SafeAreaView>
     );

@@ -1,13 +1,20 @@
-import React, { Component } from 'react';
-import { TextInput, SafeAreaView, StyleSheet, Button, Alert, NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
-import { Text, View } from 'react-native';
-import { NavigationParams, NavigationScreenProp } from 'react-navigation';
-import { NavigationState } from '@react-navigation/native';
-import { Router } from '../../util/router';
-import { sendPhoneNumber } from '../../aias/Register';
+import React, {Component} from 'react';
+import {
+  TextInput,
+  SafeAreaView,
+  StyleSheet,
+  Button,
+  Alert,
+  NativeSyntheticEvent,
+  TextInputChangeEventData,
+} from 'react-native';
+import {Text, View} from 'react-native';
+import {NavigationParams, NavigationScreenProp} from 'react-navigation';
+import {NavigationState} from '@react-navigation/native';
+import {Router} from '../../util/router';
+import {sendPhoneNumber} from '../../aias/Register';
 
-
-export type RequestHeaders = { [header: string]: string } | {};
+export type RequestHeaders = {[header: string]: string} | {};
 
 interface State {
   phoneNumber: string;
@@ -26,15 +33,17 @@ export class SMSInputScreen extends Component<Props, State> {
     this.handleOnChange = this.handleOnChange.bind(this);
   }
 
-  private handleOnChange = (e: NativeSyntheticEvent<TextInputChangeEventData>) => {
-    this.setState({ phoneNumber: e.nativeEvent.text });
+  private handleOnChange = (
+    e: NativeSyntheticEvent<TextInputChangeEventData>,
+  ) => {
+    this.setState({phoneNumber: e.nativeEvent.text});
   };
 
   private handleSubmit = async () => {
     //request verify
     try {
       const cookie = await sendPhoneNumber(this.state.phoneNumber);
-      this.props.navigation.navigate(Router.SMSVerifyScreen, { cookie: cookie });
+      this.props.navigation.navigate(Router.SMSVerifyScreen, {cookie: cookie});
     } catch (e) {
       console.error(e);
       Alert.alert(e.toString());
@@ -44,13 +53,13 @@ export class SMSInputScreen extends Component<Props, State> {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <Text>Enter phone number to signin/signup</Text>
+        <Text>電話番号を入力して登録/ログイン</Text>
         <TextInput
           style={styles.textinput}
           value={this.state.phoneNumber}
-          onChangeText={text => this.setState({ phoneNumber: text })}
+          onChangeText={text => this.setState({phoneNumber: text})}
         />
-        <Button onPress={this.handleSubmit} title="Send" color="#841584" />
+        <Button onPress={this.handleSubmit} title="送信" color="#841584" />
       </SafeAreaView>
     );
   }
@@ -67,7 +76,7 @@ const styles = StyleSheet.create({
     width: 200,
     backgroundColor: 'white',
     marginTop: 10,
-    marginBottom: 10
+    marginBottom: 10,
   },
   red: {
     color: 'red',
